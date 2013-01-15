@@ -23,6 +23,7 @@ import org.eclipse.paho.client.mqttv3.internal.wire.MqttInputStream;
 import org.eclipse.paho.client.mqttv3.internal.wire.MqttWireMessage;
 
 import android.os.PowerManager.WakeLock;
+import android.util.Log;
 
 
 /**
@@ -129,7 +130,13 @@ public class CommsReceiver implements Runnable {
 				}
 			}
 		}
-		this.wakeLock.release();
+		try {
+			if (this.wakeLock.isHeld()){
+				this.wakeLock.release();
+			}
+		} catch (Exception ex){
+			Log.w("CommsReciever", "Error releaseing wakelock in CommsReceiver!");
+		}
 		synchronized (lifecycle) {
 			//@TRACE 854=run: notify lifecycle
 			trace.trace(Trace.FINE,854);
